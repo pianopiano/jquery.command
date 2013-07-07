@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>jquery.command</title>
+        <style type="text/css">
+	        #box {
+		        font-size: 50px;
+		        color: #ff0000;
+		        width: 50px;
+		        height: 50px;
+		        background-color: #333;
+	        }
+        </style>
+    </head>
+    <body>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+        <script src="jquery.command.js"></script>
+        <script type="text/javascript">
+	        (function(){
+		        $(function(){
+					var serial = new Serial([
+						new Wait(1000),
+						new Prop($('#box'), {'background-color': '#ff0000'}),
+						new Trace('trace1'),
+						new Animate( $('#box'), {'margin-left': '200px'}, { duration: 500 , easing: 'linear'}),
+						new Wait(1000),
+						new Parallel([
+							new Animate( $('#box'), {'margin-top': '200px','opacity': '0.5'}, { duration: 500 , easing: 'linear'}),
+							new Prop($('#box'), {'background-color': '#0000ff'}),
+							new Trace('trace2')
+						]),
+						new Wait(1000),
+						new Func(
+							function(){
+								new Trace('Func').execute()
+							}
+						),
+						new Prop($('#box'), {'background-color': '#00ff00'}),
+						new Animate( $('#box'), {'margin-left': '0px','opacity': '1'}, { duration: 500 , easing: 'linear'}),
+						new Wait(1000),
+						new Prop($('#box'), {'background-color': '#333333'}),
+						new Animate( $('#box'), {'margin-top': '0px'}, { duration: 500, easing: 'linear', complete: completeHandler }),
+						new Trace('trace3'),
+						new Wait(1000),
+						new Trace('complete')
+					])
+					serial.execute();
+					
+					$(window).one('click', function(){
+						serial.skip()
+					})
+					
+					function completeHandler() {
+						console.log('completeHandler')
+					}
+					
+		        })
+	        })();
+        </script>
+        <div id="box"></div>
+    </body>
+</html>
